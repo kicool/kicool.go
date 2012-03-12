@@ -5,8 +5,8 @@ package main
 import (
 	"fmt"
 	"net"
+	"net/rpc/jsonrpc"
 	"os"
-	"rpc/jsonrpc"
 )
 
 func main() {
