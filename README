@@ -1,4 +1,5 @@
-3 samples:
+4 samples:
 	hello
 	echo
 	sum
+	alloc
