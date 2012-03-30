@@ -129,7 +129,7 @@ func Logger(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("oops"))
 }
 
-var webroot = flag.String("root", "/home/kicool", "web root directory")
+var webroot = flag.String("root", "/home/kicool/go.local", "web root directory")
 
 func main() {
 	flag.Parse()
