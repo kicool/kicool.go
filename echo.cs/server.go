@@ -5,7 +5,10 @@ import (
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+	"flag"
 )
+
+var addr = flag.String("i", "127.0.0.1:1234", "listen address and port")
 
 type RPCFunc uint8
 
@@ -16,8 +19,10 @@ func (*RPCFunc) Echo(arg *string, result *string) error {
 }
 
 func main() {
+	flag.Parse()
+
 	log.Print("Starting Server...")
-	l, err := net.Listen("tcp", "localhost:1234")
+	l, err := net.Listen("tcp", *addr)
 	defer l.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -31,7 +36,7 @@ func main() {
 			log.Printf("accept error: %s", conn)
 			continue
 		}
-		log.Printf("connection started: %v", conn.RemoteAddr())
+		log.Print("connection started:", conn.LocalAddr(), conn.RemoteAddr())
 		go jsonrpc.ServeConn(conn)
 	}
 }
