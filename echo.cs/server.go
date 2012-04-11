@@ -1,11 +1,11 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
-	"flag"
 )
 
 var addr = flag.String("i", "127.0.0.1:1234", "listen address and port")
@@ -20,6 +20,7 @@ func (*RPCFunc) Echo(arg *string, result *string) error {
 
 func main() {
 	flag.Parse()
+	log.SetPrefix("echo.server: ")
 
 	log.Print("Starting Server...")
 	l, err := net.Listen("tcp", *addr)
@@ -28,12 +29,13 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Print("listening on: ", l.Addr())
+
 	rpc.Register(new(RPCFunc))
 	for {
 		log.Print("waiting for connections ...")
 		conn, err := l.Accept()
 		if err != nil {
-			log.Printf("accept error: %s", conn)
+			log.Fatal("accept error:", conn, err)
 			continue
 		}
 		log.Print("connection started:", conn.LocalAddr(), conn.RemoteAddr())

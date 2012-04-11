@@ -1,9 +1,10 @@
-5 samples:
+samples:
 	hello
 	echo
 	sum
 	math
 	alloc
+	cgo	
 
 *.Binary file compare
 Linux svr-ubuntu-mirror 2.6.35-22-server #35-Ubuntu SMP Sat Oct 16 22:02:33 UTC 2010 x86_64 GNU/Linux
