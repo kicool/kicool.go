@@ -7,22 +7,23 @@ import (
 	"net"
 	"net/rpc/jsonrpc"
 	"os"
+	"flag"
 )
 
+var destAddr = flag.String("dest", "127.0.0.1:1234", "server addr")
+var message = flag.String("mesg", "", "message send to server")
+
 func main() {
-	conn, e := net.Dial("tcp", "localhost:1234")
+	flag.Parse()
+
+	conn, e := net.Dial("tcp", *destAddr)
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "Could not connect: %s\n", e)
 		os.Exit(1)
 	}
 	client := jsonrpc.NewClient(conn)
 	var reply string
-	for i, arg := range os.Args {
-		if i == 0 {
-			continue
-		} // Ignore program name
-		fmt.Printf("Sending: %s\n", arg)
-		client.Call("RPCFunc.Echo", arg, &reply)
-		fmt.Printf("Reply: %s\n", reply)
-	}
+	fmt.Printf("Sending: %s\n", *message)
+	client.Call("RPCFunc.Echo", *message, &reply)
+	fmt.Printf("Reply:  %s\n", reply)
 }
