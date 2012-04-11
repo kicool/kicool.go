@@ -10,8 +10,8 @@ import (
 	"flag"
 )
 
-var destAddr = flag.String("dest", "127.0.0.1:1234", "server addr")
-var message = flag.String("mesg", "", "message send to server")
+var destAddr = flag.String("d", "127.0.0.1:1234", "server addr")
+var message = flag.String("m", "", "message send to server")
 
 func main() {
 	flag.Parse()
