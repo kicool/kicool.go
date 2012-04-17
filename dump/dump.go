@@ -164,22 +164,28 @@ func Fdump(out io.Writer, v_ interface{}) {
 			r.Float32, r.Float64:
 			padprefix()
 			//printv(o.Interface());
-			i := v.Interface()
-			if stringer, ok := i.(interface {
-				String() string
-			}); ok {
-				fmt.Fprintf(out, "(%s) %s", vts, stringer.String())
-			} else {
+			ok := false
+			var i interface{}
+			if v.CanInterface() {
+				i = v.Interface()
+				stringer, ok := i.(interface {
+					String() string
+				})
+				if ok {
+					fmt.Fprintf(out, "(%s) %s", vts, stringer.String())
+				}
+			}
+			if !ok {
 				fmt.Fprint(out, i)
 			}
 
 		case r.Invalid:
 			padprefix()
-			fmt.Fprint(out, "nil")
+			fmt.Fprint(out, "<Invalid>")
 
 		default:
 			padprefix()
-			fmt.Fprintf(out, "(%v) %v", vt, v.Interface())
+			fmt.Fprintf(out, "(%v)", vt)
 		}
 	}
 

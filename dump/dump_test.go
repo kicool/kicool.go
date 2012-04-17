@@ -47,9 +47,10 @@ func TestSimpleMap(t *testing.T) {
 func TestSimplePtr(t *testing.T) {
 	i := 0
 	Dump(&i)
-	//Dump(t)
 	Dump(&empty)
 	Dump(&[][]int{[]int{1, 2, 3}, []int{1, 2, 3}, []int{1, 2, 3}})
+
+	Dump(t)
 }
 func TestSimpleString(t *testing.T) {
 	Dump(token.STRING)
