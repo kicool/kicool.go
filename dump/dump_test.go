@@ -1,7 +1,7 @@
 package dump
 
 import (
-//	. "dump"
+	//	. "dump"
 	"fmt"
 	"go/parser"
 	"go/token"

@@ -53,7 +53,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 		case r.Array, r.Chan, r.Slice:
 			vc = v.Cap()
 			vl = v.Len()
-		
+
 		case r.Struct:
 			vl = v.NumField()
 
