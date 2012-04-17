@@ -66,7 +66,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 		case r.Array, r.Slice, r.Map, r.Ptr, r.Struct, r.Interface:
 			if v.CanAddr() {
 				addr := v.Addr()
-				key := fmt.Sprintf("%x %v", addr, v.Type())
+				key := fmt.Sprintf("%x %s", addr, vts)
 				if _, exists := done[key]; exists {
 					padprefix()
 					fmt.Fprintf(out, "<%s>", key)
@@ -74,6 +74,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 				} else {
 					done[key] = true
 				}
+			} else {
 			}
 		default:
 			// do nothing
@@ -108,13 +109,13 @@ func Fdump(out io.Writer, v_ interface{}) {
 
 		case r.Map:
 			padprefix()
-			fmt.Fprintf(out, "%s:%s (l=%d){\n", vks, vts, vl)
+			fmt.Fprintf(out, "%s:%s (l=%d) {\n", vks, vts, vl)
 			for i, k := range v.MapKeys() {
 				dump0(k, d+1)
 				fmt.Fprint(out, ": ")
 				dump(v.MapIndex(k), d+1, &emptyString, nil)
 				if i != vl-1 {
-					fmt.Fprint(out, ",")
+					fmt.Fprintln(out, ",")
 				}
 			}
 			fmt.Fprintln(out)
@@ -134,12 +135,12 @@ func Fdump(out io.Writer, v_ interface{}) {
 			padprefix()
 			fmt.Fprintf(out, "%s {\n", vts)
 			d += 1
-			for i := 0; i < v.NumField(); i++ {
+			for i := 0; i < vl; i++ {
 				pad()
 				fmt.Fprint(out, v.Field(i).Type())
 				fmt.Fprint(out, ": ")
 				dump(v.Field(i), d, &emptyString, nil)
-				if i != v.NumField()-1 {
+				if i != vl-1 {
 					fmt.Fprintln(out, ",")
 				}
 			}
@@ -155,7 +156,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 
 		case r.String:
 			padprefix()
-			fmt.Fprintln(out, strconv.Quote(v.String()))
+			fmt.Fprint(out, strconv.Quote(v.String()))
 
 		case r.Bool,
 			r.Int, r.Int8, r.Int16, r.Int32, r.Int64,
