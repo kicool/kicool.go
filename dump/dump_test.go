@@ -1,14 +1,14 @@
-package dump_test
+package dump
 
 import (
-	. "dump"
+//	. "dump"
 	"fmt"
 	"go/parser"
 	"go/token"
 	"testing"
 )
 
-var emptyString = ""
+var empty = ""
 
 type S struct {
 	A int
@@ -47,8 +47,8 @@ func TestSimpleMap(t *testing.T) {
 func TestSimplePtr(t *testing.T) {
 	i := 0
 	Dump(&i)
-	Dump(t)
-	Dump(&emptyString)
+	//Dump(t)
+	Dump(&empty)
 	Dump(&[][]int{[]int{1, 2, 3}, []int{1, 2, 3}, []int{1, 2, 3}})
 }
 func TestSimpleString(t *testing.T) {

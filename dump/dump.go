@@ -39,28 +39,6 @@ func Fdump(out io.Writer, v_ interface{}) {
 			}
 		}
 
-		printv := func(o interface{}) { fmt.Fprintf(out, "%v", o) }
-
-		printf := func(s string, args ...interface{}) { fmt.Fprintf(out, s, args) }
-
-		// prevent circular for composite types
-		switch v.Kind() {
-		case r.Array, r.Slice, r.Map, r.Ptr, r.Struct, r.Interface:
-			if v.CanAddr() {
-				addr := v.Addr()
-				key := fmt.Sprintf("%x %v", addr, v.Type())
-				if _, exists := done[key]; exists {
-					padprefix()
-					printf("<%s>", key)
-					return
-				} else {
-					done[key] = true
-				}
-			}
-		default:
-			// do nothing
-		}
-
 		vk := v.Kind()
 		vt := v.Type()
 		vts := vt.String()
@@ -75,9 +53,30 @@ func Fdump(out io.Writer, v_ interface{}) {
 		case r.Array, r.Chan, r.Slice:
 			vc = v.Cap()
 			vl = v.Len()
+		
+		case r.Struct:
+			vl = v.NumField()
 
 		default:
 			//panic
+		}
+
+		// prevent circular for composite types
+		switch vk {
+		case r.Array, r.Slice, r.Map, r.Ptr, r.Struct, r.Interface:
+			if v.CanAddr() {
+				addr := v.Addr()
+				key := fmt.Sprintf("%x %v", addr, v.Type())
+				if _, exists := done[key]; exists {
+					padprefix()
+					fmt.Fprintf(out, "<%s>", key)
+					return
+				} else {
+					done[key] = true
+				}
+			}
+		default:
+			// do nothing
 		}
 
 		switch vk {
@@ -109,13 +108,13 @@ func Fdump(out io.Writer, v_ interface{}) {
 
 		case r.Map:
 			padprefix()
-			fmt.Fprintf(out, "%s (l=%d){\n", vts, vl)
+			fmt.Fprintf(out, "%s:%s (l=%d){\n", vks, vts, vl)
 			for i, k := range v.MapKeys() {
 				dump0(k, d+1)
 				fmt.Fprint(out, ": ")
 				dump(v.MapIndex(k), d+1, &emptyString, nil)
 				if i != vl-1 {
-					fmt.Fprintln(out, ",")
+					fmt.Fprint(out, ",")
 				}
 			}
 			fmt.Fprintln(out)
@@ -127,7 +126,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 			if v.Elem() == r.ValueOf(nil) { //Zero Value
 				fmt.Fprintf(out, "(*%s) nil", vts)
 			} else {
-				fmt.Fprint(out, "&")
+				fmt.Fprintf(out, "ptr:*%s:&", r.Indirect(v).Type().String())
 				dump(v.Elem(), d, &emptyString, nil)
 			}
 
@@ -156,7 +155,7 @@ func Fdump(out io.Writer, v_ interface{}) {
 
 		case r.String:
 			padprefix()
-			printv(strconv.Quote(v.String()))
+			fmt.Fprintln(out, strconv.Quote(v.String()))
 
 		case r.Bool,
 			r.Int, r.Int8, r.Int16, r.Int32, r.Int64,
