@@ -10,8 +10,16 @@ func sum(a []int) int {
 }
 
 func main() {
-	//s := sum([4]int{5,7,8,0}[:])
-	//s := sum([...]int{1,2,3,4}[:])
-	s := sum([]int{1,2,3})
-	println(s)
+	a0 := [4]int{5, 7, 8, 0}
+	a1 := [...]int{1, 2, 3, 4}
+
+	s0 := sum(a0[:])
+	s1 := sum(a1[:])
+	s2 := sum([]int{1, 2, 3})
+
+	// Build error
+	// invalid operation [3]int literal[:] (slice of unaddressable value)
+	// s3 := sum([...]int{1,2,3}[:])
+
+	println(s0, s1, s2)
 }
