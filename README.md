@@ -1,4 +1,4 @@
-"!http://api.coderwall.com/kicool/endorsecount.png!":http://coderwall.com/kicool
+[![endorse](http://api.coderwall.com/kicool/endorsecount.png)](http://coderwall.com/kicool)
 
 samples:
 	hello
