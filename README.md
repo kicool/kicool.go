@@ -9,6 +9,7 @@ samples:
 	cgo	
 	dump: from code.google.com/p/golang/ Additional packages for Go programming language
 	scanner: from code.google.com/p/golang/ Additional packages for Go programming language
+	lb: a simple load balancer from http://concur.rspace.googlecode.com/hg/talk/concur.html
 
 *.Binary file compare
 Linux svr-ubuntu-mirror 2.6.35-22-server #35-Ubuntu SMP Sat Oct 16 22:02:33 UTC 2010 x86_64 GNU/Linux
