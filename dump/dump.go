@@ -137,7 +137,9 @@ func Fdump(out io.Writer, v_ interface{}) {
 			d += 1
 			for i := 0; i < vl; i++ {
 				pad()
-				fmt.Fprint(out, v.Field(i).Type())
+				fmt.Fprint(out, vt.Field(i).Name)
+				fmt.Fprint(out, "/")
+				fmt.Fprint(out, vt.Field(i).Type)
 				fmt.Fprint(out, ": ")
 				dump(v.Field(i), d, &emptyString, nil)
 				if i != vl-1 {
