@@ -82,6 +82,31 @@ func getJsonResp(u *url.URL, p string) (map[string]string, error) {
 	return jsonBlob, nil
 }
 
+func fakeUA(ua string) {
+	req, err := http.NewRequest("GET", "http://httpbin.org/user-agent", nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("%#v", req)
+
+	req.Header.Set("User-Agent", ua)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Println(string(body))
+}
+
 func main() {
 	flag.Parse()
 
@@ -91,8 +116,9 @@ func main() {
 		help(u)
 	}
 
-	getIP(u)
+	//getIP(u)
 
-	getUA(u)
+	fakeUA("Golang httpbin")
+	//getUA(u)
 
 }
