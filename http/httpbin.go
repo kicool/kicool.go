@@ -35,8 +35,11 @@ func help(u *url.URL) {
 func getIP(u *url.URL) string {
 	ip, err := getJsonResp(u, "/ip")
 	if err == nil {
-		log.Println("Your IP:", ip["origin"])
-		return ip["origin"]
+		s, ok := ip["origin"].(string)
+		if ok {
+			log.Println("Your IP:", ip["origin"])
+			return s
+		}
 	}
 	return ""
 }
@@ -44,14 +47,18 @@ func getIP(u *url.URL) string {
 func getUA(u *url.URL) string {
 	ua, err := getJsonResp(u, "/user-agent")
 	if err == nil {
-		log.Println("Your UA:", ua["user-agent"])
-		return ua["user-agent"]
+		s, ok := ua["user-agent"].(string)
+		if ok {
+			log.Println("Your UA:", s)
+			return s
+		}
 	}
 	return ""
-
 }
 
-func getJsonResp(u *url.URL, p string) (map[string]string, error) {
+type RespJsonType map[string]interface{}
+
+func getJsonResp(u *url.URL, p string) (RespJsonType, error) {
 	u.Path = p
 
 	log.Println("getJsonResp from ", u)
@@ -69,16 +76,15 @@ func getJsonResp(u *url.URL, p string) (map[string]string, error) {
 		return nil, err
 	}
 
-	//log.Println(string(body))
+	log.Println("Response:", string(body))
 
-	jsonBlob := make(map[string]string)
+	jsonBlob := make(RespJsonType)
 	err = json.Unmarshal(body, &jsonBlob)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	log.Println("Response", jsonBlob)
 	return jsonBlob, nil
 }
 
@@ -107,6 +113,24 @@ func fakeUA(ua string) {
 	log.Println(string(body))
 }
 
+func getHeader(u *url.URL) interface{} {
+	header, err := getJsonResp(u, "/headers")
+	if err == nil {
+		log.Println("Your Headers:", header["headers"])
+		return header["headers"]
+	}
+	return nil
+}
+
+func getGet(u *url.URL) interface{} {
+	getData, err := getJsonResp(u, "/get")
+	if err == nil {
+		log.Println("Your get data:", getData)
+		return getData
+	}
+	return nil
+}
+
 func main() {
 	flag.Parse()
 
@@ -116,9 +140,15 @@ func main() {
 		help(u)
 	}
 
-	//getIP(u)
+	getIP(u)
+
+	getUA(u)
 
 	fakeUA("Golang httpbin")
-	//getUA(u)
+	getUA(u)
+
+	getHeader(u)
+
+	getGet(u)
 
 }
