@@ -5,53 +5,58 @@ import (
 	"fmt"
 )
 
-const max = 100
-
 type StackT struct {
-	stack [max]string
-	size  int
+	data []string
+	size uint
+	top  uint
 }
 
-func (s *StackT) push(pushed string) error {
-	n := s.size
-	if n >= max-1 {
+func NewStack(max uint) *StackT {
+	s := make([]string, max)
+	return &StackT{data: s, size: max, top: 0}
+}
+
+func (s *StackT) Push(pushed string) error {
+	n := s.top
+	if n >= s.size-1 {
 		return errors.New("Stack overflow")
 	}
-	s.size++
-	s.stack[n] = pushed
+	s.top++
+	s.data[n] = pushed
 	return nil
 }
 
-func (s *StackT) pop() (string, error) {
-	n := s.size
+func (s *StackT) Pop() (string, error) {
+	n := s.top
 	if n == 0 {
-		return string(""), errors.New("Stack underflow")
+		return string(""), fmt.Errorf("Stack underflow")
 	}
-	top := s.stack[n-1]
-	s.size--
+	top := s.data[n-1]
+	s.top--
 	return top, nil
 }
 
-func (s *StackT) print_all() {
-	n := s.size
-	fmt.Println("Size:", n)
-	for i := 0; i < n; i++ {
-		fmt.Printf("\t%d:\t%s\n", i, s.stack[i])
+func (s *StackT) Print() {
+	n := s.top
+	fmt.Println("Cap:", s.size, "Size:", n)
+	var i uint
+	for i = 0; i < n; i++ {
+		fmt.Printf("\t%d:\t%s\n", i, s.data[i])
 	}
 }
 
 func main() {
-	stack := new(StackT)
-	stack.print_all()
-	stack.push("boo")
-	stack.print_all()
-	popped, _ := stack.pop()
+	stack := NewStack(10)
+	stack.Print()
+	stack.Push("boo")
+	stack.Print()
+	popped, _ := stack.Pop()
 	fmt.Printf("Stack top is %s\n", popped)
-	stack.print_all()
-	stack.push("moo")
-	stack.push("zoo")
-	stack.print_all()
-	popped2, _ := stack.pop()
+	stack.Print()
+	stack.Push("moo")
+	stack.Push("zoo")
+	stack.Print()
+	popped2, _ := stack.Pop()
 	fmt.Printf("Stack top is %s\n", popped2)
-	stack.print_all()
+	stack.Print()
 }
