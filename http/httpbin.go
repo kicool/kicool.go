@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	u = &url.URL{Host: "httpbin.org", Scheme: "http"}
-	h = flag.Bool("h", false, "show help for httpbin.org")
+	u      = &url.URL{Host: "httpbin.org", Scheme: "http"}
+	h      = flag.Bool("h", false, "show help for httpbin.org")
+	client = &http.Client{}
 )
 
 func help(u *url.URL) {
@@ -98,7 +99,6 @@ func fakeUA(ua string) {
 
 	req.Header.Set("User-Agent", ua)
 
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalln(err)
@@ -113,13 +113,38 @@ func fakeUA(ua string) {
 	log.Println(string(body))
 }
 
-func getHeader(u *url.URL) interface{} {
-	header, err := getJsonResp(u, "/headers")
-	if err == nil {
-		log.Println("Your Headers:", header["headers"])
-		return header["headers"]
+func showHeader() {
+	req, err := http.NewRequest("GET", "http://httpbin.org/headers", nil)
+	if err != nil {
+		log.Fatalln(err)
 	}
-	return nil
+
+	req.Header = map[string][]string{
+		"Accept-Encoding": {"gzip, deflate"},
+		"Accept-Language": {"zh-cn"},
+		"Connection":      {"keep-alive"},
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln("ioutil.ReadAll", err)
+	}
+
+	jsonBlob := make(RespJsonType)
+	err = json.Unmarshal(body, &jsonBlob)
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println("Your Request Header get from local:", req.Header)
+	log.Println("Your Response Header returned from Server:", resp.Header)
+	log.Println("Your Request Headers returned from Server:", jsonBlob["headers"])
 }
 
 func getGet(u *url.URL) interface{} {
@@ -140,15 +165,5 @@ func main() {
 		help(u)
 	}
 
-	getIP(u)
-
-	getUA(u)
-
-	fakeUA("Golang httpbin")
-	getUA(u)
-
-	getHeader(u)
-
-	getGet(u)
-
+	showHeader()
 }
